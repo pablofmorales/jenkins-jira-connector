@@ -1,0 +1,29 @@
+{
+    "name": "pablofmorales/CDTool",
+    "description": "",
+    "keywords": ["silex", "continunous delivery"],
+    "type": "component",
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/jenkins-khan/jenkins-php-api.git"
+    }],
+    "require": {
+        "php": ">=7.0.0",
+        "knplabs/github-api": "~1.4",
+        "symfony/console" : "3.1@stable",
+        "jenkins-khan/jenkins-api": "dev-master",
+        "guzzlehttp/guzzle": "^6.2",
+        "vlucas/phpdotenv": "^2.3"
+    },
+    "require-dev": {
+        "codeception/codeception": "dev-master",
+        "fzaninotto/faker": "*",
+        "mockery/mockery": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "CD\\":"src/",
+            "JiraApi\\":"src/Jira"
+        }
+    }
+}
