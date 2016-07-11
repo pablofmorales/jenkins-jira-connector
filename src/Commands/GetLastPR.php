@@ -2,8 +2,11 @@
 
 namespace CD\Commands;
 
-use CD\Jira\Client as JiraClient;
+use GuzzleHttp\Client as HttpClient;
+use JenkinsKhan\Jenkins;
+use Jira\Client as JiraClient;
 use Github\Client as GithubClient;
+use Jira\Resources\Issues;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +28,7 @@ class GetLastPR extends Command
                 'project',
                 InputArgument::REQUIRED,
                 'With ticket is related with this project'
-            )       
+            )
             ->addArgument(
                 'build',
                 InputArgument::REQUIRED,
@@ -37,6 +40,7 @@ class GetLastPR extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return  null
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -51,27 +55,34 @@ class GetLastPR extends Command
             'password' => getenv("JIRA_PASS"),
         ];
 
-        $jira = new JiraClient($config);
-        
+        $httpClient = new HttpClient();
+
+        $jira = new JiraClient($httpClient, $config);
+
+
+        $jiraIssue = new Issues($jira);
+
         // Create a link for PR
-        $params = '{"object": {"url":"' . $this->pullRequest['html_url'] . 
+        $params = '{"object": {"url":"' . $this->pullRequest['html_url'] .
             '", "title":"Pull Request :: '. $this->pullRequest['id'] .'"}}';
-        
-        $jira->createRemoteLink($jiraId, $params);
-        
-        $buildUrl = getenv('JENKINS_JOB_URL') . $build; 
+
+        $jiraIssue->createRemoteLink($jiraId, $params);
+
+        $buildUrl = getenv('JENKINS_JOB_URL') . $build;
         // Create a link for PR
-        
+
         $aux = explode("/", $build);
+
         $title = 'Jenkins Build :: ' . trim($aux[1]);
-        $params = '{"object": {"url":"' . $buildUrl . 
+        
+        $params = '{"object": {"url":"' . $buildUrl .
             '", "title":"'.$title.'"}}';
-        
-        $jira->createRemoteLink($jiraId, $params);
-        $params = '{"update": {"comment": [{"add": {"body": "Jenkins :: Project in Staging to be reviewed."}}]}, 
+
+        $jiraIssue->createRemoteLink($jiraId, $params);
+        $params = '{"update": {"comment": [{"add": {"body": "Jenkins :: Project in Staging to be reviewed."}}]},
             "transition": {"id": "931"}}';
-        $jira->updateTransitions($jiraId, $params);
-        
+        $jiraIssue->updateTransitions($jiraId, $params);
+
     }
 
     private function getJiraIdFromTheLastClosedPR($project)
@@ -79,7 +90,7 @@ class GetLastPR extends Command
         $client = new GithubClient();
         $client->authenticate(getenv('GITHUB_ACCESS_TOKEN'), null, GithubClient::AUTH_URL_TOKEN);
         $pullRequest = $client->api('pull_request')
-            ->all('endouble', $project, ['state' => 'closed']);        
+            ->all('endouble', $project, ['state' => 'closed']);
         $this->pullRequest = $pullRequest[0];
         $aux = explode("::", $this->pullRequest['title']);
         return (count($aux) >= 2) ? trim($aux[0]) : null;
@@ -93,7 +104,7 @@ class GetLastPR extends Command
     {
 
         $jenkinsUrl = getenv('JENKIN_API_URL');
-        $jenkins = new \JenkinsKhan\Jenkins($jenkinsUrl);
+        $jenkins = new Jenkins($jenkinsUrl);
         $job = $jenkins->getJob('ATS_JobApplication_CI');
         var_dump ($job->getJenkinsBuild(36));
 

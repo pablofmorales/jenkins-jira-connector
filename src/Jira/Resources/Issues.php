@@ -19,10 +19,11 @@ class Issues
     {
         $this->client = $client;
     }
-    
+
     /**
-     * @param $issue
+     * @param $issueId
      * @return mixed
+     * @internal param $issue
      */
     public function get($issueId)
     {
@@ -45,6 +46,7 @@ class Issues
     /**
      * @param $issue
      * @param $params
+     * @return mixed
      */
     public function updateTransitions($issue, $params)
     {
@@ -58,6 +60,7 @@ class Issues
     /**
      * @param $issue
      * @param $params
+     * @return mixed
      */
     public function createRemoteLink($issue, $params)
     {

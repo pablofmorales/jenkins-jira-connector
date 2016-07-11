@@ -11,6 +11,7 @@ class Client
 
     /**
      * Client constructor.
+     * @param HttpClient $client
      * @param $config
      */
     public function __construct(HttpClient $client, $config)
@@ -26,7 +27,7 @@ class Client
      */
     public function get($url, $option = [])
     {
-        $response = $this->client('GET', $url, $this->getOptions($option));
+        $response = $this->client->request('GET', $url, $this->getOptions($option));
         return json_decode($response->getBody(), true);
     }
 
@@ -37,7 +38,7 @@ class Client
      */
     public function post($url, $option = [])
     {
-        return $this->client(
+        return $this->client->request(
             'POST', $url, $this->getOptions($option)
         );
     }
@@ -48,9 +49,8 @@ class Client
      */
     private function getOptions($option = [])
     {
-
         $option['base_uri'] = $this->config['host'];
-        
+        $option['auth'] = [$this->config['username'], $this->config['password']];
         return $option;
     }
 
