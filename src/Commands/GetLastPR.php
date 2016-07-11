@@ -66,7 +66,7 @@ class GetLastPR extends Command
         $params = '{"object": {"url":"' . $this->pullRequest['html_url'] .
             '", "title":"Pull Request :: '. $this->pullRequest['id'] .'"}}';
 
-        $jiraIssue->createRemoteLink($jiraId, $params);
+//        $jiraIssue->createRemoteLink($jiraId, $params);
 
         $buildUrl = getenv('JENKINS_JOB_URL') . $build;
         // Create a link for PR
@@ -74,7 +74,7 @@ class GetLastPR extends Command
         $aux = explode("/", $build);
 
         $title = 'Jenkins Build :: ' . trim($aux[1]);
-        
+
         $params = '{"object": {"url":"' . $buildUrl .
             '", "title":"'.$title.'"}}';
 
