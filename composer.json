@@ -23,7 +23,7 @@
     "autoload": {
         "psr-4": {
             "CD\\":"src/",
-            "JiraApi\\":"src/Jira"
+            "Jira\\":"src/Jira"
         }
     }
 }

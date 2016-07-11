@@ -1,79 +1,57 @@
 <?php
-namespace CD\Jira;
+namespace Jira;
+
+use GuzzleHttp\Client as HttpClient;
 
 class Client
 {
     
-    private $options;
     private $client;
+    private $config;
 
     /**
      * Client constructor.
      * @param $config
      */
-    public function __construct($config)
+    public function __construct(HttpClient $client, $config)
     {
-        $this->client = new \GuzzleHttp\Client([
-           'base_uri' => $config['host'],
-        ]);
-        
-        $this->options = ['auth' => [$config['username'], $config['password']]];
+        $this->client = $client;
+        $this->config = $config;
     }
 
     /**
-     * @param $issue
+     * @param $url
+     * @param array $option
      * @return mixed
      */
-    public function getIssue($issue)
+    public function get($url, $option = [])
     {
-        $res = $this->client->request(
-            'GET', '/rest/api/2/issue/' . $issue, $this->options
-        );
-        return json_decode($res->getBody(), true);
+        $response = $this->client('GET', $url, $this->getOptions($option));
+        return json_decode($response->getBody(), true);
     }
 
     /**
-     * @param $issue
+     * @param $url
+     * @param array $option
      * @return mixed
      */
-    public function getTransitions($issue)
+    public function post($url, $option = [])
     {
-        $res = $this->client->request(
-            'GET', '/rest/api/2/issue/' . $issue . '/transitions', $this->options
+        return $this->client(
+            'POST', $url, $this->getOptions($option)
         );
-        return json_decode($res->getBody(), true);
     }
 
     /**
-     * @param $issue
-     * @param $params
+     * @param array $option
+     * @return array
      */
-    public function updateTransitions($issue, $params)
+    private function getOptions($option = [])
     {
 
-        $options = $this->options;
-        $options['json'] = json_decode($params); 
-
-        $this->client->request(
-            'post', '/rest/api/2/issue/' . $issue . '/transitions', $options
-        );        
+        $option['base_uri'] = $this->config['host'];
         
+        return $option;
     }
 
-    /**
-     * @param $issue
-     * @param $params
-     */
-    public function createRemoteLink($issue, $params)
-    {
-
-        $options = $this->options;
-        $options['json'] = json_decode($params); 
-
-        $this->client->request(
-            'post', '/rest/api/2/issue/' . $issue . '/remotelink', $options
-        );        
-        
-    }
-    
 }
