@@ -63,8 +63,8 @@ class GetLastPR extends Command
         $jiraIssue = new Issues($jira);
 
         // Create a link for PR
-        $params = '{"object": {"url":"' . $this->pullRequest['html_url'] .
-            '", "title":"Pull Request :: '. $this->pullRequest['id'] .'"}}';
+//        $params = '{"object": {"url":"' . $this->pullRequest['html_url'] .
+//            '", "title":"Pull Request :: '. $this->pullRequest['id'] .'"}}';
 
 //        $jiraIssue->createRemoteLink($jiraId, $params);
 
@@ -75,10 +75,10 @@ class GetLastPR extends Command
 
         $title = 'Jenkins Build :: ' . trim($aux[1]);
 
-        $params = '{"object": {"url":"' . $buildUrl .
-            '", "title":"'.$title.'"}}';
+//        $params = '{"object": {"url":"' . $buildUrl .
+//            '", "title":"'.$title.'"}}';
 
-        $jiraIssue->createRemoteLink($jiraId, $params);
+//        $jiraIssue->createRemoteLink($jiraId, $params);
         $params = '{"update": {"comment": [{"add": {"body": "Jenkins :: Project in Staging to be reviewed."}}]},
             "transition": {"id": "931"}}';
         $jiraIssue->updateTransitions($jiraId, $params);
